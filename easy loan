@@ -1,0 +1,362 @@
+import React, { useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Check, PhoneCall, ShieldCheck, Clock, Banknote, Home, Briefcase, Gem, IndianRupee } from "lucide-react";
+
+// 👉 Replace these with your real business details
+const BUSINESS_NAME = "FinTalks DSA"; // your brand
+const PHONE = "+91-90000-00000"; // your number
+const WHATSAPP = "919000000000"; // in international format without + sign
+const EMAIL = "hello@fintalks.example"; // your email
+const ADDRESS = "Hyderabad, Telangana"; // your address
+
+// Copy in English and Telugu
+const copy = {
+  en: {
+    nav: { services: "Services", process: "Process", calculator: "EMI Calculator", faq: "FAQ", contact: "Contact" },
+    hero: {
+      headline: `${BUSINESS_NAME}: Loans Made Simple`,
+      sub: "We connect you with the right Bank/NBFC for Personal, Business, Home and Gold Loans—fast, transparent and hassle‑free.",
+      ctaPrimary: "Get Free Eligibility Check",
+      ctaSecondary: "Call Now",
+    },
+    ribbons: ["RBI‑registered partners", "Fast approvals", "End‑to‑end guidance"],
+    services: {
+      title: "What we do",
+      list: [
+        { icon: Banknote, title: "Personal Loans", desc: "Quick unsecured loans with smart EMI planning." },
+        { icon: Briefcase, title: "Business Loans", desc: "Working capital, term loans, OD/CC facilities." },
+        { icon: Home, title: "Home Loans", desc: "Purchase, balance transfer, top‑up and LAP." },
+        { icon: Gem, title: "Gold Loans", desc: "Instant liquidity against gold with flexible tenure." },
+      ],
+    },
+    why: {
+      title: "Why choose us",
+      points: [
+        { icon: ShieldCheck, text: "Multiple banks & NBFCs compared for you" },
+        { icon: Clock, text: "Faster processing & doorstep support" },
+        { icon: Check, text: "Transparent guidance—no hidden charges" },
+      ],
+    },
+    process: {
+      title: "Simple 4‑step process",
+      steps: [
+        { title: "Share your need", desc: "Tell us the amount & purpose—2 minutes." },
+        { title: "Quick eligibility", desc: "We check across partners and suggest options." },
+        { title: "Submit documents", desc: "Pickup or WhatsApp—fully guided." },
+        { title: "Approval & disbursal", desc: "Track status till money in your account." },
+      ],
+    },
+    calc: {
+      title: "EMI Calculator",
+      amount: "Loan Amount",
+      rate: "Interest Rate (p.a.)",
+      tenure: "Tenure (months)",
+      emi: "Estimated EMI",
+    },
+    faq: {
+      title: "Frequently asked questions",
+      items: [
+        { q: "Are you a bank?", a: "No—we are a DSA partner. We compare multiple banks/NBFCs and help you choose the best option, then manage the process for you." },
+        { q: "Do you charge fees?", a: "Our consultation is free. If any processing/partner charges apply, we disclose them upfront—no surprises." },
+        { q: "What documents are needed?", a: "Typically ID, address, income proofs and bank statements. Exact list depends on product and lender." },
+      ],
+    },
+    contact: {
+      title: "Contact us",
+      note: "Have a question or want a free eligibility check? Send a message—our team will call you back.",
+      name: "Your Name",
+      phone: "Phone Number",
+      message: "Your Message",
+      send: "Send Enquiry",
+    },
+    footer: `© ${new Date().getFullYear()} ${BUSINESS_NAME}. All rights reserved.`,
+  },
+  te: {
+    nav: { services: "సేవలు", process: "ప్రక్రియ", calculator: "EMI కాలిక్యులేటర్", faq: "ప్రశ్నలు", contact: "సంప్రదించండి" },
+    hero: {
+      headline: `${BUSINESS_NAME}: లోన్లు ఇప్పుడు సింపుల్`,
+      sub: "పర్సనల్, బిజినెస్, హోమ్, గోల్డ్ లోన్ల కోసం సరైన బ్యాంక్/NBFC ను మేమే కనెక్ట్ చేస్తాం—ఫాస్ట్, క్లియర్, హాసిల్‑ఫ్రీ.",
+      ctaPrimary: "ఫ్రీ ఎలిజిబిలిటీ చెక్",
+      ctaSecondary: "ఇప్పుడే కాల్ చేయండి",
+    },
+    ribbons: ["RBI రిజిస్టర్‌డ్ భాగస్వాములు", "వేగమైన అప్రూవల్స్", "ఎండ్‑టు‑ఎండ్ గైడెన్స్"],
+    services: {
+      title: "మా సేవలు",
+      list: [
+        { icon: Banknote, title: "పర్సనల్ లోన్లు", desc: "క్విక్ అన్సెక్యూర్డ్ లోన్స్—స్మార్ట్ EMI ప్లాన్‌తో." },
+        { icon: Briefcase, title: "బిజినెస్ లోన్లు", desc: "వర్కింగ్ క్యాపిటల్, టర్మ్ లోన్, OD/CC." },
+        { icon: Home, title: "హోమ్ లోన్లు", desc: "పర్చేజ్, బ్యాలెన్స్ ట్రాన్స్‌ఫర్, టాప్‑అప్ & LAP." },
+        { icon: Gem, title: "గోల్డ్ లోన్లు", desc: "ఫ్లెక్సిబుల్ టెన్యూర్‌తో ఇన్‌స్టంట్ లిక్విడిటీ." },
+      ],
+    },
+    why: {
+      title: "ఎందుకు మమ్మల్ని ఎంచుకోవాలి",
+      points: [
+        { icon: ShieldCheck, text: "చాలా బ్యాంకులు & NBFCలను కంపేర్ చేస్తాం" },
+        { icon: Clock, text: "ఫాస్ట్ ప్రాసెసింగ్ & డోర్‌స్టెప్ సపోర్ట్" },
+        { icon: Check, text: "ట్రాన్స్‌పరెంట్ గైడెన్స్—హిడెన్ ఛార్జిలు లేవు" },
+      ],
+    },
+    process: {
+      title: "4 స్టెప్స్‌లో ప్రాసెస్",
+      steps: [
+        { title: "అవసరాన్ని షేర్ చేయండి", desc: "అమౌంట్ & పర్పస్—2 నిమిషాలు." },
+        { title: "క్విక్ ఎలిజిబిలిటీ", desc: "భాగస్వాములలో బెస్ట్ ఆప్షన్స్ సూచిస్తాం." },
+        { title: "డాక్యుమెంట్స్ సమర్పణ", desc: "పికప్/వాట్సాప్—ఫుల్ గైడెన్స్." },
+        { title: "అప్రూవల్ & డిస్బర్సల్", desc: "మనీ అకౌంట్‌లో పడే వరకు ట్రాక్ చేస్తాం." },
+      ],
+    },
+    calc: { title: "EMI కాలిక్యులేటర్", amount: "లోన్ అమౌంట్", rate: "ఇంటరెస్ట్ రేట్ (సంవ.)", tenure: "టెన్యూర్ (మంత్స్)", emi: "ఎస్టిమేటెడ్ EMI" },
+    faq: {
+      title: "తరచుగా అడిగే ప్రశ్నలు",
+      items: [
+        { q: "మీరు బ్యాంక్ నా?", a: "కాదు—we are DSA. అనేక బ్యాంక్/NBFCల ఆప్షన్స్‌ను కంపేర్ చేసి, మీకు సరిపోయేదాన్ని ఫాస్ట్‌గా ప్రాసెస్ చేస్తాం." },
+        { q: "ఫీజులు ఉంటాయా?", a: "కన్సల్టేషన్ ఫ్రీ. ఏవైనా ఛార్జిలు ఉంటే ముందుగానే క్లియర్‌గా చెబుతాం." },
+        { q: "ఏ డాక్యుమెంట్స్ కావాలి?", a: "సాధారణంగా ID, అడ్రస్, ఇన్‌కమ్ ప్రూఫ్స్, బ్యాంక్ స్టేట్‌మెంట్స్. ప్రొడక్ట్/లెండర్‌పై ఆధారపడి మారవచ్చు." },
+      ],
+    },
+    contact: { title: "మమ్మల్ని సంప్రదించండి", note: "ఫ్రీ ఎలిజిబిలిటీ చెక్ కావాలా? మెసేజ్ పంపండి—మా టీం కాల్ చేస్తుంది.", name: "మీ పేరు", phone: "ఫోన్ నంబర్", message: "మీ సందేశం", send: "పంపండి" },
+    footer: `© ${new Date().getFullYear()} ${BUSINESS_NAME}. అన్ని హక్కులు ప్రత్యేకం.`,
+  },
+};
+
+function useLangCopy(lang) {
+  return copy[lang] || copy.en;
+}
+
+function formatINR(n) {
+  if (!Number.isFinite(n)) return "-";
+  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+}
+
+export default function DsaLanding() {
+  const [lang, setLang] = useState("en");
+  const t = useLangCopy(lang);
+
+  const [amount, setAmount] = useState(500000);
+  const [rate, setRate] = useState(12);
+  const [months, setMonths] = useState(36);
+
+  const emi = useMemo(() => {
+    const P = amount;
+    const r = rate / 12 / 100; // monthly rate
+    const n = months;
+    if (r === 0) return P / n;
+    return (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  }, [amount, rate, months]);
+
+  const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+    `Hi ${BUSINESS_NAME}, I want a free eligibility check. Loan amount: ${amount}, tenure: ${months} months.`
+  )}`;
+
+  const callUrl = `tel:${PHONE}`;
+  const mailUrl = `mailto:${EMAIL}?subject=${encodeURIComponent("Loan enquiry")}`;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 text-slate-800">
+      {/* Top bar */}
+      <header className="sticky top-0 z-40 backdrop-blur bg-white/70 border-b">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <IndianRupee className="w-6 h-6" />
+            <span className="font-bold text-lg">{BUSINESS_NAME}</span>
+            <Badge className="ml-2" variant="secondary">DSA</Badge>
+          </div>
+          <nav className="hidden md:flex items-center gap-6 text-sm">
+            <a href="#services" className="hover:underline">{t.nav.services}</a>
+            <a href="#process" className="hover:underline">{t.nav.process}</a>
+            <a href="#calculator" className="hover:underline">{t.nav.calculator}</a>
+            <a href="#faq" className="hover:underline">{t.nav.faq}</a>
+            <a href="#contact" className="hover:underline">{t.nav.contact}</a>
+          </nav>
+          <div className="flex items-center gap-2">
+            <select
+              aria-label="Language"
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              className="border rounded-xl px-3 py-1 text-sm"
+            >
+              <option value="en">English</option>
+              <option value="te">తెలుగు</option>
+            </select>
+            <Button asChild className="rounded-2xl">
+              <a href={callUrl}><PhoneCall className="w-4 h-4 mr-2" /> {PHONE}</a>
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="max-w-7xl mx-auto px-4 py-12 md:py-20">
+        <div className="grid md:grid-cols-2 gap-10 items-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">
+              {t.hero.headline}
+            </h1>
+            <p className="mt-4 text-slate-600 text-lg">{t.hero.sub}</p>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {t.ribbons.map((x, i) => (
+                <Badge key={i} className="rounded-2xl px-3 py-1" variant="outline">{x}</Badge>
+              ))}
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild size="lg" className="rounded-2xl">
+                <a href={whatsappUrl} target="_blank" rel="noreferrer">{t.hero.ctaPrimary}</a>
+              </Button>
+              <Button asChild size="lg" variant="secondary" className="rounded-2xl">
+                <a href={callUrl}>{t.hero.ctaSecondary}</a>
+              </Button>
+            </div>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}>
+            <Card className="rounded-3xl shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-xl">{t.calc.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <label className="text-sm font-medium">{t.calc.amount}</label>
+                <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value || 0))} min={10000} step={10000} />
+
+                <label className="text-sm font-medium">{t.calc.rate}</label>
+                <Input type="number" value={rate} onChange={(e) => setRate(Number(e.target.value || 0))} min={1} step={0.5} />
+
+                <label className="text-sm font-medium">{t.calc.tenure}</label>
+                <Input type="number" value={months} onChange={(e) => setMonths(Number(e.target.value || 0))} min={6} step={6} />
+
+                <div className="p-4 bg-slate-50 rounded-2xl border flex items-center justify-between">
+                  <span className="text-sm text-slate-500">{t.calc.emi}</span>
+                  <span className="text-2xl font-bold">{formatINR(emi)}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section id="services" className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">{t.services.title}</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {t.services.list.map((s, i) => (
+            <Card key={i} className="rounded-2xl">
+              <CardContent className="pt-6">
+                <s.icon className="w-8 h-8" />
+                <h3 className="mt-3 font-semibold text-lg">{s.title}</h3>
+                <p className="text-sm text-slate-600 mt-1">{s.desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Why choose us */}
+      <section className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-3 gap-6">
+          {t.why.points.map((p, i) => (
+            <Card key={i} className="rounded-2xl">
+              <CardContent className="pt-6 flex gap-3 items-start">
+                <p.icon className="w-6 h-6 shrink-0" />
+                <p className="text-slate-700">{p.text}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Process */}
+      <section id="process" className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">{t.process.title}</h2>
+        <div className="grid md:grid-cols-4 gap-6">
+          {t.process.steps.map((step, i) => (
+            <Card key={i} className="rounded-2xl">
+              <CardHeader>
+                <Badge variant="secondary" className="rounded-full w-8 h-8 flex items-center justify-center">{i + 1}</Badge>
+                <CardTitle className="mt-2 text-lg">{step.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-slate-600">{step.desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="max-w-5xl mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">{t.faq.title}</h2>
+        <div className="space-y-4">
+          {t.faq.items.map((f, i) => (
+            <Card key={i} className="rounded-2xl">
+              <CardHeader>
+                <CardTitle className="text-lg">{f.q}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700">{f.a}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Contact */}
+      <section id="contact" className="max-w-4xl mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6">{t.contact.title}</h2>
+        <p className="text-slate-600 mb-6">{t.contact.note}</p>
+        <Card className="rounded-3xl">
+          <CardContent className="pt-6 grid md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <label className="text-sm font-medium">{t.contact.name}</label>
+              <Input placeholder={t.contact.name} />
+              <label className="text-sm font-medium">{t.contact.phone}</label>
+              <Input placeholder={t.contact.phone} />
+              <label className="text-sm font-medium">Email</label>
+              <Input placeholder="Email" />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium">{t.contact.message}</label>
+              <Textarea className="flex-1" placeholder={t.contact.message} />
+              <div className="mt-4 flex gap-3">
+                <Button asChild className="rounded-2xl"><a href={whatsappUrl} target="_blank" rel="noreferrer">WhatsApp</a></Button>
+                <Button asChild variant="secondary" className="rounded-2xl"><a href={mailUrl}>Email</a></Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <div className="mt-6 text-sm text-slate-600">
+          <p><strong>Phone:</strong> {PHONE}</p>
+          <p><strong>Email:</strong> {EMAIL}</p>
+          <p><strong>Address:</strong> {ADDRESS}</p>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t mt-8">
+        <div className="max-w-7xl mx-auto px-4 py-8 text-sm text-slate-500 flex flex-col md:flex-row items-center justify-between gap-3">
+          <p>{t.footer}</p>
+          <div className="flex gap-4">
+            <a className="hover:underline" href={whatsappUrl} target="_blank" rel="noreferrer">WhatsApp</a>
+            <a className="hover:underline" href={callUrl}>Call</a>
+            <a className="hover:underline" href={mailUrl}>Email</a>
+          </div>
+        </div>
+      </footer>
+
+      {/* Floating WhatsApp */}
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="fixed bottom-5 right-5 md:bottom-8 md:right-8 inline-flex items-center gap-2 px-4 py-3 rounded-full shadow-lg bg-green-500 text-white"
+        aria-label="Chat on WhatsApp"
+      >
+        <PhoneCall className="w-4 h-4" />
+        <span className="hidden sm:inline">{t.hero.ctaPrimary}</span>
+      </a>
+    </div>
+  );
+}
